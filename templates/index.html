@@ -1,42 +1,480 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My EC2 App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AutoPulse | Connected Vehicle</title>
+
     <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(0, 229, 255, 0.12), transparent 30%),
+                radial-gradient(circle at 80% 80%, rgba(255, 60, 100, 0.10), transparent 30%),
+                #070b12;
+            color: #eaf7ff;
+            min-height: 100vh;
+        }
+
+        /* Top navigation */
+        .navbar {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: rgba(7, 11, 18, 0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #00e5ff, #0066ff);
+            color: white;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.35);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #8fa5b8;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff9d;
+            box-shadow: 0 0 12px #00ff9d;
+        }
+
+        /* Main */
+        .container {
+            width: min(1100px, 90%);
+            margin: 50px auto;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .hero-content {
+            padding: 20px 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 7px 13px;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 20px;
+            color: #00e5ff;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        h1 {
+            font-size: clamp(42px, 6vw, 72px);
+            line-height: 0.95;
+            margin: 20px 0;
+            letter-spacing: -3px;
+        }
+
+        h1 span {
+            color: #00e5ff;
+            text-shadow: 0 0 25px rgba(0,229,255,0.4);
+        }
+
+        .subtitle {
+            color: #8295a8;
+            font-size: 17px;
+            line-height: 1.7;
+            max-width: 600px;
+        }
+
+        /* Car illustration */
+        .car-panel {
+            position: relative;
+            height: 250px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            background: linear-gradient(
+                145deg,
+                rgba(255,255,255,0.06),
+                rgba(255,255,255,0.015)
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .car-panel::before {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: #00e5ff;
+            filter: blur(100px);
+            opacity: 0.12;
+        }
+
+        .car {
+            position: relative;
+            width: 240px;
+            height: 80px;
+            border: 3px solid #00e5ff;
+            border-radius: 80px 100px 30px 30px;
+            box-shadow: 0 0 30px rgba(0,229,255,0.3);
+        }
+
+        .car::before {
+            content: "";
+            position: absolute;
+            width: 105px;
+            height: 45px;
+            left: 65px;
+            top: -45px;
+            border: 3px solid #00e5ff;
+            border-bottom: none;
+            border-radius: 70px 70px 0 0;
+        }
+
+        .wheel {
+            position: absolute;
+            bottom: -23px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #080d14;
+            border: 5px solid #354b5c;
+            box-shadow: 0 0 15px rgba(0,229,255,0.2);
+        }
+
+        .wheel.left {
+            left: 35px;
+        }
+
+        .wheel.right {
+            right: 35px;
+        }
+
+        /* Dashboard cards */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin: 35px 0;
+        }
+
+        .card {
+            padding: 20px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .card-label {
+            color: #71879a;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            margin-top: 10px;
+            font-size: 27px;
+            font-weight: 600;
+        }
+
+        .cyan {
+            color: #00e5ff;
+        }
+
+        .green {
+            color: #00ff9d;
+        }
+
+        .orange {
+            color: #ffb347;
+        }
+
+        /* Message section */
+        .message-panel {
+            margin-top: 30px;
+            padding: 28px;
+            border-radius: 22px;
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 12px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px 18px;
+            border-radius: 12px;
+            border: 1px solid #263847;
+            outline: none;
+            background: #0b121b;
+            color: white;
+            font-size: 15px;
+            transition: 0.25s;
+        }
+
+        input:focus {
+            border-color: #00e5ff;
+            box-shadow: 0 0 15px rgba(0,229,255,0.15);
+        }
+
+        button {
+            padding: 15px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            color: #001015;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00e5ff, #00ff9d);
+            transition: 0.25s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,229,255,0.25);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 22px;
+        }
+
+        li {
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-left: 3px solid #00e5ff;
+            border-radius: 8px;
+            background: rgba(0,229,255,0.045);
+            color: #c9d9e5;
+        }
+
+        li::before {
+            content: "◆";
+            color: #00e5ff;
+            margin-right: 10px;
+            font-size: 9px;
+        }
+
+        footer {
+            text-align: center;
+            margin: 50px 0 25px;
+            color: #536676;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 800px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .input-area {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>My Python Application</h1>
 
-        <input
-            id="message"
-            type="text"
-            placeholder="Enter a message"
-        >
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">⚡</div>
+            AUTOPULSE
+        </div>
 
-        <button onclick="addMessage()">Add Message</button>
+        <div class="status">
+            <span class="status-dot"></span>
+            SYSTEM ONLINE
+        </div>
+    </nav>
 
-        <h2>Messages</h2>
-        <ul id="messages"></ul>
-    </div>
+
+    <main class="container">
+
+        <!-- Hero -->
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="tag">
+                    Connected Vehicle Platform
+                </div>
+
+                <h1>
+                    Drive the<br>
+                    <span>Future.</span>
+                </h1>
+
+                <p class="subtitle">
+                    A modern automotive electronics control interface
+                    designed for connected vehicles, telemetry,
+                    diagnostics and intelligent mobility.
+                </p>
+
+            </div>
+
+
+            <!-- Simple car visualization -->
+            <div class="car-panel">
+
+                <div class="car">
+                    <div class="wheel left"></div>
+                    <div class="wheel right"></div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Vehicle telemetry -->
+        <section class="dashboard">
+
+            <div class="card">
+                <div class="card-label">Vehicle Status</div>
+                <div class="card-value green">● Online</div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">System Voltage</div>
+                <div class="card-value cyan">12.6 V</div>
+            </div>
+
+            <div class="card">
+                <div class="card-label">Engine Temperature</div>
+                <div class="card-value orange">86 °C</div>
+            </div>
+
+        </section>
+
+
+        <!-- Messages -->
+        <section class="message-panel">
+
+            <div class="message-header">
+                <h2>Vehicle Event Log</h2>
+
+                <span class="tag">
+                    LIVE
+                </span>
+            </div>
+
+            <div class="input-area">
+
+                <input
+                    id="message"
+                    type="text"
+                    placeholder="Enter vehicle event or diagnostic message..."
+                    onkeydown="if(event.key === 'Enter') addMessage()"
+                >
+
+                <button onclick="addMessage()">
+                    + Add Event
+                </button>
+
+            </div>
+
+            <ul id="messages"></ul>
+
+        </section>
+
+        <footer>
+            AUTOPULSE // AUTOMOTIVE ELECTRONICS // CONNECTED MOBILITY
+        </footer>
+
+    </main>
+
 
     <script>
+
         async function loadMessages() {
+
             const response = await fetch("/api/messages");
+
             const messages = await response.json();
 
             const list = document.getElementById("messages");
+
             list.innerHTML = "";
 
             messages.forEach(item => {
+
                 const li = document.createElement("li");
+
                 li.textContent = item.message;
+
                 list.appendChild(li);
+
             });
         }
 
+
         async function addMessage() {
+
             const input = document.getElementById("message");
 
             if (!input.value.trim()) {
@@ -44,20 +482,28 @@
             }
 
             await fetch("/api/messages", {
+
                 method: "POST",
+
                 headers: {
                     "Content-Type": "application/json"
                 },
+
                 body: JSON.stringify({
                     message: input.value
                 })
+
             });
 
             input.value = "";
+
             loadMessages();
         }
 
+
         loadMessages();
+
     </script>
+
 </body>
 </html>

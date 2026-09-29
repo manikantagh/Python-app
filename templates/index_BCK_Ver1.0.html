@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My EC2 App</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>My Python Application</h1>
+
+        <input
+            id="message"
+            type="text"
+            placeholder="Enter a message"
+        >
+
+        <button onclick="addMessage()">Add Message</button>
+
+        <h2>Messages</h2>
+        <ul id="messages"></ul>
+    </div>
+
+    <script>
+        async function loadMessages() {
+            const response = await fetch("/api/messages");
+            const messages = await response.json();
+
+            const list = document.getElementById("messages");
+            list.innerHTML = "";
+
+            messages.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item.message;
+                list.appendChild(li);
+            });
+        }
+
+        async function addMessage() {
+            const input = document.getElementById("message");
+
+            if (!input.value.trim()) {
+                return;
+            }
+
+            await fetch("/api/messages", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: input.value
+                })
+            });
+
+            input.value = "";
+            loadMessages();
+        }
+
+        loadMessages();
+    </script>
+</body>
+</html>
